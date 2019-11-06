@@ -1,5 +1,5 @@
 {
-  "name": "tinypixel/config",
+  "name": "tiny-pixel/config",
   "description": "Internal configuration helper for roots/bedrock projects",
   "license": "MIT",
   "require": {
