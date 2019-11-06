@@ -13,9 +13,15 @@ class Bootloader
 {
     /**
      * Bedrock Config tool
-     * @var \Roots\WPConfig\Config
+     * @var  Roots\WPConfig\Config
      */
     public static $roots;
+
+    /**
+     * Instance
+     * @var TinyPixel\Config\Bootloader
+     */
+    protected static $bootloader;
 
     /**
      * Bedrock root dir
@@ -24,28 +30,36 @@ class Bootloader
     public $bedrockDir;
 
     /**
-     * Class constructor.
+     * Instantiate class.
+     *
+     * @return \TinyPixel\Config\Bootloader
      */
-    public function __construct()
+    public static function getInstance()
     {
-        self::$roots = Config::class;
+        if (self::$bootloader) {
+            return self::$bootloader;
+        }
+
+        return self::$bootloader = new Bootloader();
     }
 
     /**
-     * Initialize boot.
+     * Initialize class.
      *
-     * @var    string Bedrock root directory
+     * @param  string Bedrock root directory
      * @return void
      */
     public function init(string $bedrockDir) : void
     {
+        self::$roots = Config::class;
+
         $this->bedrockDir = $bedrockDir;
     }
 
     /**
-     * Load environmental variables
+     * Load environmental parameters.
      *
-     * @var array required environmental variables
+     * @paramrray required environmental parameters
      *
      * @return void
      */
@@ -60,7 +74,7 @@ class Bootloader
     /**
      * Define filesystem
      *
-     * @var    array filesystem
+     * @param  array filesystem
      * @return void
      */
     public function defineFS(array $fs) : void
@@ -76,7 +90,7 @@ class Bootloader
     /**
      * Define database
      *
-     * @var    array $db
+     * @param  array $db
      * @return void
      */
     public function defineDB(array $db) : void
@@ -87,7 +101,7 @@ class Bootloader
     /**
      * Define S3
      *
-     * @var    array s3 configuration
+     * @param  array s3 configuration
      * @return void
      */
     public function defineS3(array $s3) : void
@@ -98,7 +112,7 @@ class Bootloader
     /**
      * Define stages
      *
-     * @var    array
+     * @param  array
      * @return void
      */
     public function defineEnvironments(array $envs) : void
@@ -109,7 +123,7 @@ class Bootloader
     /**
      * Configure WordPress application
      *
-     * @var    array wordpress configuration
+     * @param  array wordpress configuration
      * @return void
      */
     public function configureWordPressApp(array $config) : void
@@ -120,7 +134,7 @@ class Bootloader
     /**
      * Define Redis
      *
-     * @var    array Redis connection
+     * @param  array Redis connection
      * @return void
      */
     public function defineRedis(array $redis) : void
@@ -141,7 +155,7 @@ class Bootloader
     /**
      * Configure Redis
      *
-     * @var    array Redis configuration
+     * @param  array Redis configuration
      * @return void
      */
     public function configureRedis(array $redis) : void
@@ -152,7 +166,7 @@ class Bootloader
     /**
      * Define salts
      *
-     * @var    array salts
+     * @param  array salts
      * @return void
      */
     public function defineSalts(array $salt) : void
@@ -161,71 +175,18 @@ class Bootloader
     }
 
     /**
-     * Allow WordPress to detect HTTPS when used behind a reverse proxy or a load balancer
-     * @see https://codex.wordpress.org/Function_Reference/is_ssl#Notes
+     * Override environment
      *
+     * @param  string environment
      * @return void
      */
-    public function exposeSSL() : void
+    public function overrides(string $env)
     {
-        if (self::isSSL()) {
-            $_SERVER['HTTPS'] = 'on';
+        $file = "{$this->bedrockDir}/environments/{$env}.php";
+
+        if(file_exists($file)) {
+            require $file;
         }
-    }
-
-    /**
-     * Override envs
-     *
-     * @param  string current environment
-     * @return void
-     */
-    public function overrideEnv(string $currentEnv) : void
-    {
-        $this->{$currentEnv}();
-    }
-
-    /**
-     * Dev specific configuration
-     *
-     * @param  array overrides
-     * @return void
-     */
-    public function development(array $overrides = [], callable $callback = null)
-    {
-        foreach($overrides as $key => $value) {
-            self::define($key, $value);
-        }
-
-        if($callback) {
-            $callback();
-        }
-
-        self::define('SAVEQUERIES', true);
-        self::define('WP_DEBUG', true);
-        self::define('WP_DEBUG_DISPLAY', true);
-        self::define('SCRIPT_DEBUG', true);
-        self::define('DISALLOW_FILE_MODS', false);
-    }ini_set('display_errors', 1);
-
-
-    /**
-     * Staging specific configuration
-     *
-     * @return void
-     */
-    public function staging() : void
-    {
-        // --
-    }
-
-    /**
-     * Production specific configuration
-     *
-     * @return void
-     */
-    public function production() : void
-    {
-        // --
     }
 
     /**
@@ -235,6 +196,8 @@ class Bootloader
      */
     public function boot() : void
     {
+        self::overrides(self::get('WP_ENV'));
+
         self::$roots::apply();
 
         if (!defined('ABSPATH')) {
@@ -255,8 +218,8 @@ class Bootloader
     /**
      * Define for Roots Config
      *
-     * @var    string  constant
-     * @var    mixed   value
+     * @param  string  constant
+     * @param  mixed   value
      * @return void
      */
     public static function define(string $const, $value) : void
@@ -267,8 +230,7 @@ class Bootloader
     /**
      * Define set of config items
      *
-     * @var   array definitions
-     *
+     * @param  array definitions
      * @return void
      */
     public function defineSet($definitions) : void
@@ -278,6 +240,24 @@ class Bootloader
         }
     }
 
+    /**
+     * Allow WordPress to detect HTTPS when used behind a reverse proxy or a load balancer
+     * @see https://codex.wordpress.org/Function_Reference/is_ssl#Notes
+     *
+     * @return void
+     */
+    public function exposeSSL() : void
+    {
+        if (self::isSSL()) {
+            $_SERVER['HTTPS'] = 'on';
+        }
+    }
+
+    /**
+     * Is SSL?
+     *
+     * @return bool true if SSL is enabled
+     */
     public static function isSSL()
     {
         return isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
