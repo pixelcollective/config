@@ -1,6 +1,7 @@
 {
   "name": "tinypixel/config",
   "description": "Internal configuration helper for roots/bedrock projects",
+  "license": "MIT",
   "require": {
     "php": ">=7.1",
     "oscarotero/env": "^1.2.0",
