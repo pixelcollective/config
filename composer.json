@@ -1,0 +1,23 @@
+{
+  "name": "tinypixel/config",
+  "description": "Internal configuration helper for roots/bedrock projects",
+  "require": {
+    "php": ">=7.1",
+    "oscarotero/env": "^1.2.0",
+    "roots/wp-config": "1.0.0",
+    "vlucas/phpdotenv": "^3.4.0"
+  },
+  "require-dev": {
+    "roave/security-advisories": "dev-master"
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "scripts": {
+    "test": ["phpcs"]
+  }
+}
