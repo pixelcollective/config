@@ -3,27 +3,25 @@
   "description": "Internal configuration helper for roots/bedrock projects",
   "license": "MIT",
   "require": {
-    "php": ">=7.1",
     "oscarotero/env": "^1.2.0",
     "roots/wp-config": "1.0.0",
-    "vlucas/phpdotenv": "^3.4.0"
+    "vlucas/phpdotenv": "^4.1.0"
   },
   "require-dev": {
-    "roave/security-advisories": "dev-master"
+    "roave/security-advisories": "dev-master",
+    "squizlabs/php_codesniffer": "^3.5",
+    "phpunit/phpunit": "^8.5"
   },
   "autoload": {
     "psr-4": {
-      "\\TinyPixel\\Config\\": "src"
+      "TinyPixel\\Config\\": "src"
     }
-  },
-  "config": {
-    "optimize-autoloader": true,
-    "preferred-install": "dist",
-    "sort-packages": true
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
   "scripts": {
-    "test": ["phpcs"]
+    "lint": [
+      "phpcs"
+    ]
   }
 }

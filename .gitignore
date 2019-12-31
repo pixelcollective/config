@@ -1,1 +1,6 @@
-!vendor
+# Deps
+vendor
+
+# Unit
+tmp
+*.cache

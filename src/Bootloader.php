@@ -1,72 +1,59 @@
 <?php
+
 namespace TinyPixel\Config;
 
 use Dotenv\Dotenv;
 use Roots\WPConfig\Config;
 
 /**
- * WordPress Application Bootloader
+ * Load application
  *
- * @package TinyPixel\Config
+ * @package TinyPixel
  */
 class Bootloader
 {
     /**
      * Bedrock Config tool
-     * @var  Roots\WPConfig\Config
+     *
+     * @var \Roots\WPConfig\Config
      */
-    public static $roots;
-
-    /**
-     * Instance
-     * @var TinyPixel\Config\Bootloader
-     */
-    protected static $bootloader;
+    public static $rootsConfig;
 
     /**
      * Bedrock root dir
+     *
      * @var string
      */
     public $bedrockDir;
 
     /**
-     * Instantiate class.
-     *
-     * @return \TinyPixel\Config\Bootloader
+     * Class constructor.
      */
-    public static function getInstance()
+    public function __construct()
     {
-        if (self::$bootloader) {
-            return self::$bootloader;
-        }
-
-        return self::$bootloader = new Bootloader();
+        self::$rootsConfig = Config::class;
     }
 
     /**
-     * Initialize class.
+     * Initialize boot.
      *
-     * @param  string Bedrock root directory
+     * @var    string Bedrock root directory
      * @return void
      */
-    public function init(string $bedrockDir) : void
+    public function init(string $bedrockDir): void
     {
-        self::$roots = Config::class;
-
         $this->bedrockDir = $bedrockDir;
     }
 
     /**
-     * Load environmental parameters.
+     * Load environmental variables
      *
-     * @paramrray required environmental parameters
-     *
+     * @var    array required environmental variables
      * @return void
      */
-    public function loadEnv(array $required = ['WP_HOME', 'WP_ENV', 'WP_SITEURL']) : void
+    public function loadEnv(array $required = ['WP_HOME', 'WP_SITEURL']): void
     {
-        $this->env = Dotenv::create($this->bedrockDir);
-
+        $this->env = Dotenv::createImmutable($this->bedrockDir);
         $this->env->load();
         $this->env->required($required);
     }
@@ -74,10 +61,10 @@ class Bootloader
     /**
      * Define filesystem
      *
-     * @param  array filesystem
+     * @var    array filesystem
      * @return void
      */
-    public function defineFS(array $fs) : void
+    public function defineFS(array $fs): void
     {
         $this->defineSet($fs);
 
@@ -90,10 +77,10 @@ class Bootloader
     /**
      * Define database
      *
-     * @param  array $db
+     * @var    array $db
      * @return void
      */
-    public function defineDB(array $db) : void
+    public function defineDB(array $db): void
     {
         $this->defineSet($db);
     }
@@ -101,10 +88,10 @@ class Bootloader
     /**
      * Define S3
      *
-     * @param  array s3 configuration
+     * @var    array s3 configuration
      * @return void
      */
-    public function defineS3(array $s3) : void
+    public function defineS3(array $s3): void
     {
         $this->defineSet($s3);
     }
@@ -112,10 +99,10 @@ class Bootloader
     /**
      * Define stages
      *
-     * @param  array
+     * @var    array
      * @return void
      */
-    public function defineEnvironments(array $envs) : void
+    public function defineEnvironments(array $envs): void
     {
         self::define('ENVIRONMENTS', $envs);
     }
@@ -123,21 +110,23 @@ class Bootloader
     /**
      * Configure WordPress application
      *
-     * @param  array wordpress configuration
+     * @var    array wordpress configuration
      * @return void
      */
-    public function configureWordPressApp(array $config) : void
+    public function configureWordPressApp(array $configuration): void
     {
-        self::defineSet($config);
+        self::defineSet($configuration);
+
+        ini_set('display_errors', self::get('DISPLAY_ERRORS'));
     }
 
     /**
      * Define Redis
      *
-     * @param  array Redis connection
+     * @var    array Redis connection
      * @return void
      */
-    public function defineRedis(array $redis) : void
+    public function defineRedis(array $redis): void
     {
         global $redis_server;
 
@@ -155,10 +144,10 @@ class Bootloader
     /**
      * Configure Redis
      *
-     * @param  array Redis configuration
+     * @var    array Redis configuration
      * @return void
      */
-    public function configureRedis(array $redis) : void
+    public function configureRedis(array $redis): void
     {
         $this->defineSet($redis);
     }
@@ -166,27 +155,72 @@ class Bootloader
     /**
      * Define salts
      *
-     * @param  array salts
+     * @var    array salts
      * @return void
      */
-    public function defineSalts(array $salt) : void
+    public function defineSalts(array $salt): void
     {
         $this->defineSet($salt);
     }
 
     /**
-     * Override environment
+     * Allow WordPress to detect HTTPS when used behind a reverse proxy or a load balancer
+     * @see https://codex.wordpress.org/Function_Reference/is_ssl#Notes
      *
-     * @param  string environment
      * @return void
      */
-    public function overrides(string $env)
+    public function exposeSSL(): void
     {
-        $file = "{$this->bedrockDir}/environments/{$env}.php";
-
-        if(file_exists($file)) {
-            require $file;
+        if (self::isSSL()) {
+            $_SERVER['HTTPS'] = 'on';
         }
+    }
+
+    /**
+     * Override envs
+     *
+     * @param  string current environment
+     * @return void
+     */
+    public function overrideEnv(string $currentEnv): void
+    {
+        $this->{$currentEnv}();
+    }
+
+    /**
+     * Dev specific configuration
+     *
+     * @return void
+     */
+    public function development()
+    {
+        self::define('SAVEQUERIES', true);
+        self::define('WP_DEBUG', true);
+        self::define('WP_DEBUG_DISPLAY', true);
+        self::define('SCRIPT_DEBUG', true);
+        self::define('DISALLOW_FILE_MODS', false);
+
+        ini_set('display_errors', 1);
+    }
+
+    /**
+     * Staging specific configuration
+     *
+     * @return void
+     */
+    public function staging(): void
+    {
+        // --
+    }
+
+    /**
+     * Production specific configuration
+     *
+     * @return void
+     */
+    public function production(): void
+    {
+        // --
     }
 
     /**
@@ -194,11 +228,9 @@ class Bootloader
      *
      * @return void
      */
-    public function boot() : void
+    public function boot(): void
     {
-        self::overrides(self::get('WP_ENV'));
-
-        self::$roots::apply();
+        self::$rootsConfig::apply();
 
         if (!defined('ABSPATH')) {
             define('ABSPATH', "{$this->bedrockDir}/web/wp");
@@ -212,52 +244,35 @@ class Bootloader
      */
     public static function get($get)
     {
-        return self::$roots::get($get);
+        return self::$rootsConfig::get($get);
     }
 
     /**
      * Define for Roots Config
      *
-     * @param  string  constant
-     * @param  mixed   value
+     * @var    string  constant
+     * @var    mixed   value
      * @return void
      */
-    public static function define(string $const, $value) : void
+    public static function define(string $const, $value): void
     {
-        self::$roots::define($const, $value);
+        self::$rootsConfig::define($const, $value);
     }
 
     /**
      * Define set of config items
      *
-     * @param  array definitions
+     * @var   array definitions
+     *
      * @return void
      */
-    public function defineSet($definitions) : void
+    public function defineSet($definitions): void
     {
         foreach ($definitions as $const => $def) {
             self::define($const, $def);
         }
     }
 
-    /**
-     * Allow WordPress to detect HTTPS when used behind a reverse proxy or a load balancer
-     * @see https://codex.wordpress.org/Function_Reference/is_ssl#Notes
-     *
-     * @return void
-     */
-    public function exposeSSL() : void
-    {
-        if (self::isSSL()) {
-            $_SERVER['HTTPS'] = 'on';
-        }
-    }
-
-    /**
-     * Is SSL?
-     *
-     * @return bool true if SSL is enabled
-     */
     public static function isSSL()
     {
         return isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
