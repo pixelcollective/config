@@ -123,11 +123,11 @@ $table_prefix = $bootloader::get('DB_PREFIX');
  * Define S3.
  */
 $bootloader->defineS3([
-    'S3_UPLOADS_BUCKET'     => env('S3_UPLOADS_BUCKET'),
-    'S3_UPLOADS_KEY'        => env('S3_UPLOADS_KEY'),
-    'S3_UPLOADS_SECRET'     => env('S3_UPLOADS_SECRET'),
-    'S3_UPLOADS_ENDPOINT'   => env('S3_UPLOADS_ENDPOINT'),
-    'S3_UPLOADS_REGION'     => env('S3_UPLOADS_REGION'),
+    'S3_UPLOADS_BUCKET'   => env('S3_UPLOADS_BUCKET'),
+    'S3_UPLOADS_KEY'      => env('S3_UPLOADS_KEY'),
+    'S3_UPLOADS_SECRET'   => env('S3_UPLOADS_SECRET'),
+    'S3_UPLOADS_ENDPOINT' => env('S3_UPLOADS_ENDPOINT'),
+    'S3_UPLOADS_REGION'   => env('S3_UPLOADS_REGION'),
 ]);
 
 /**
