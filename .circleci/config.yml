@@ -1,0 +1,61 @@
+version: 2.1
+
+executors:
+  php-73:
+    docker:
+      - image: circleci/php:7.3-stretch
+
+commands:
+  code-climate-build:
+    steps:
+      - checkout
+      - run: sudo pecl channel-update pecl.php.net
+      - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+      - run: chmod +x ./cc-test-reporter
+      - run: sudo mkdir -p $CIRCLE_TEST_REPORTS/phpunit
+      - run: ./cc-test-reporter before-build
+
+  code-climate-exec:
+    steps:
+      - run: vendor/bin/phpunit --coverage-clover clover.xml
+      - run: ./cc-test-reporter after-build -t clover --exit-code $?
+
+  composer-install:
+    steps:
+      - restore_cache:
+          keys:
+            - composer-v1-{{ checksum "composer.lock" }}
+            - composer-v1-
+      - run: composer install -n --prefer-dist
+      - save_cache:
+          key: composer-v1-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+
+jobs:
+  build-php:
+    executor: php-73
+    steps:
+      - code-climate-build
+      - composer-install
+      - code-climate-exec
+
+workflows:
+  deploy:
+    jobs:
+      # Hold build for approval
+      - hold:
+          type: approval
+          filters:
+            branches:
+              only:
+                - master
+
+      # Build PHP
+      - build-php:
+          requires:
+            - hold
+          filters:
+            branches:
+              only:
+                - master

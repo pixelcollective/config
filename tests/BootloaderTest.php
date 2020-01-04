@@ -18,11 +18,6 @@ use \PHPUnit\Framework\TestCase;
 final class BootloaderTest extends TestCase
 {
     /**
-     * class instance
-     */
-    public $bootloader;
-
-    /**
      * @string
      */
     public $bedrockDir = __DIR__ . '/..';
@@ -45,9 +40,9 @@ final class BootloaderTest extends TestCase
     /**
      * Test: Roots configuration class loads
      *
-     * @coversNothing
+     * @covers \TinyPixel\Config\Bootloader::__construct
      */
-    public function testIfRootsConfigLoads()
+    public function testRootsConfig()
     {
         $this->assertEquals(
             $this->bootloader::$rootsConfig,
@@ -58,9 +53,9 @@ final class BootloaderTest extends TestCase
     /**
      * Test: bedrock directory is set
      *
-     * @covers       ::init
+     * @covers \TinyPixel\Config\Bootloader::init
      */
-    public function testIfBedrockDirIsSet()
+    public function testBedrockDir()
     {
         $this->bootloader->init($this->bedrockDir);
 
@@ -70,15 +65,106 @@ final class BootloaderTest extends TestCase
     /**
      * Test: environmental variables are set
      *
-     * @depends testIfBedrockDirIsSet
-     * @covers  ::loadEnv
+     * @depends testBedrockDir
+     * @covers  \TinyPixel\Config\Bootloader::loadEnv
      */
-    public function testIfEnvIsSet()
+    public function testEnv()
     {
         $this->bootloader->init($this->mockDir);
 
         $this->bootloader->loadEnv();
 
         $this->assertIsObject($this->bootloader->env);
+    }
+
+    /**
+     * Test: define
+     *
+     * @depends testEnv
+     * @covers  \TinyPixel\Config\Bootloader::define
+     * @covers  \TinyPixel\Config\Bootloader::get
+     */
+    public function testGetDefine()
+    {
+        $medium  = 'test';
+        $message = 'passes';
+
+        $this->bootloader::define($medium, $message);
+
+        $this->assertEquals($this->bootloader::get($medium), $message);
+    }
+
+    /**
+     * Test: defineSet
+     *
+     * @depends testEnv
+     * @covers  \TinyPixel\Config\Bootloader::define
+     * @covers  \TinyPixel\Config\Bootloader::defineSet
+     * @covers  \TinyPixel\Config\Bootloader::get
+     */
+    public function testGetDefineSet()
+    {
+        $medium  = 'test';
+        $message = 'passes';
+
+        $this->bootloader->defineSet([$medium => $message]);
+
+        $this->assertEquals($this->bootloader::get($medium), $message);
+    }
+
+    /**
+     * Test: define database
+     *
+     * @depends testEnv
+     * @depends testGetDefineSet
+     * @covers  \TinyPixel\Config\Bootloader::defineDB
+     */
+    public function testDB()
+    {
+        $medium  = 'test';
+        $message = 'passes';
+
+        $this->bootloader->defineDB([$medium => $message]);
+
+        $this->assertEquals($this->bootloader::get($medium), $message);
+    }
+
+    /**
+     * Test: define FS
+     *
+     * @depends testEnv
+     * @depends testGetDefineSet
+     * @covers  \TinyPixel\Config\Bootloader::defineFS
+     */
+    public function testFS()
+    {
+        $fakeFS = [
+            'CONTENT_DIR' => '/lady/ada',
+            'WP_HOME'     => 'https://foo.bar',
+        ];
+
+        $this->bootloader->defineFS($fakeFS);
+
+        $this->assertEquals(
+            $this->bootloader::get('WP_CONTENT_URL'),
+            "{$fakeFS['WP_HOME']}/{$fakeFS['CONTENT_DIR']}"
+        );
+    }
+
+    /**
+     * Test: define environments
+     *
+     * @depends testEnv
+     * @depends testGetDefineSet
+     * @covers  \TinyPixel\Config\Bootloader::defineDB
+     */
+    public function test()
+    {
+        $medium  = 'test';
+        $message = 'passes';
+
+        $this->bootloader->defineEnvironments([$medium => $message]);
+
+        $this->assertEquals($this->bootloader::get($medium), $message);
     }
 }

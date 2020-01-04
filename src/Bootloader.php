@@ -59,6 +59,42 @@ class Bootloader
     }
 
     /**
+     * Get from Roots config
+     *
+     * @return mixed
+     */
+    public static function get($get)
+    {
+        return self::$rootsConfig::get($get);
+    }
+
+    /**
+     * Define for Roots Config
+     *
+     * @var    string  constant
+     * @var    mixed   value
+     * @return void
+     */
+    public static function define(string $const, $value): void
+    {
+        self::$rootsConfig::define($const, $value);
+    }
+
+    /**
+     * Define set of config items
+     *
+     * @var   array definitions
+     *
+     * @return void
+     */
+    public function defineSet($definitions): void
+    {
+        foreach ($definitions as $const => $def) {
+            self::define($const, $def);
+        }
+    }
+
+    /**
      * Define filesystem
      *
      * @var    array filesystem
@@ -66,9 +102,8 @@ class Bootloader
      */
     public function defineFS(array $fs): void
     {
-        $this->defineSet($fs);
-
         $this->defineSet([
+            $fs,
             'WP_CONTENT_DIR' => "{$this->bedrockDir}/web/{$fs['CONTENT_DIR']}",
             'WP_CONTENT_URL' => "{$fs['WP_HOME']}/{$fs['CONTENT_DIR']}",
         ]);
@@ -194,33 +229,15 @@ class Bootloader
      */
     public function development()
     {
-        self::define('SAVEQUERIES', true);
-        self::define('WP_DEBUG', true);
-        self::define('WP_DEBUG_DISPLAY', true);
-        self::define('SCRIPT_DEBUG', true);
-        self::define('DISALLOW_FILE_MODS', false);
+        self::defineSet([
+            'SAVEQUERIES'        => true,
+            'WP_DEBUG'           => true,
+            'WP_DEBUG_DISPLAY'   => true,
+            'SCRIPT_DEBUG'       => true,
+            'DISALLOW_FILE_MODS' => false,
+        ]);
 
         ini_set('display_errors', 1);
-    }
-
-    /**
-     * Staging specific configuration
-     *
-     * @return void
-     */
-    public function staging(): void
-    {
-        // --
-    }
-
-    /**
-     * Production specific configuration
-     *
-     * @return void
-     */
-    public function production(): void
-    {
-        // --
     }
 
     /**
@@ -234,42 +251,6 @@ class Bootloader
 
         if (!defined('ABSPATH')) {
             define('ABSPATH', "{$this->bedrockDir}/web/wp");
-        }
-    }
-
-    /**
-     * Get from Roots config
-     *
-     * @return mixed
-     */
-    public static function get($get)
-    {
-        return self::$rootsConfig::get($get);
-    }
-
-    /**
-     * Define for Roots Config
-     *
-     * @var    string  constant
-     * @var    mixed   value
-     * @return void
-     */
-    public static function define(string $const, $value): void
-    {
-        self::$rootsConfig::define($const, $value);
-    }
-
-    /**
-     * Define set of config items
-     *
-     * @var   array definitions
-     *
-     * @return void
-     */
-    public function defineSet($definitions): void
-    {
-        foreach ($definitions as $const => $def) {
-            self::define($const, $def);
         }
     }
 
