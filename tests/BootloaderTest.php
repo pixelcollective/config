@@ -156,15 +156,17 @@ final class BootloaderTest extends TestCase
      *
      * @depends testEnv
      * @depends testGetDefineSet
-     * @covers  \TinyPixel\Config\Bootloader::defineDB
+     * @covers  \TinyPixel\Config\Bootloader::defineEnvironments
      */
-    public function test()
+    public function testEnvironments()
     {
-        $medium  = 'test';
-        $message = 'passes';
+        $envs = [
+            'DEVELOPMENT' => 'http://foo.bar',
+            'PRODUCTION'  => 'https://foo.bar',
+        ];
 
-        $this->bootloader->defineEnvironments([$medium => $message]);
+        $this->bootloader->defineEnvironments($envs);
 
-        $this->assertEquals($this->bootloader::get($medium), $message);
+        $this->assertEquals($this->bootloader::get('ENVIRONMENTS'), $envs);
     }
 }
