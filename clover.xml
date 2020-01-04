@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1578159357">
-  <project timestamp="1578159357">
+<coverage generated="1578160397">
+  <project timestamp="1578160397">
     <package name="TinyPixel\Config">
       <file name="/Users/kellymears/code/packages/config/src/Bootloader.php">
         <class name="TinyPixel\Config\Bootloader" namespace="TinyPixel\Config" fullPackage="TinyPixel" package="TinyPixel">
-          <metrics complexity="23" methods="19" coveredmethods="8" conditionals="0" coveredconditionals="0" statements="54" coveredstatements="21" elements="73" coveredelements="29"/>
+          <metrics complexity="23" methods="19" coveredmethods="9" conditionals="0" coveredconditionals="0" statements="54" coveredstatements="23" elements="73" coveredelements="32"/>
         </class>
         <line num="32" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="1"/>
         <line num="34" type="stmt" count="1"/>
@@ -38,9 +38,9 @@
         <line num="129" type="method" name="defineS3" visibility="public" complexity="1" crap="2" count="0"/>
         <line num="131" type="stmt" count="0"/>
         <line num="132" type="stmt" count="0"/>
-        <line num="140" type="method" name="defineEnvironments" visibility="public" complexity="1" crap="2" count="0"/>
-        <line num="142" type="stmt" count="0"/>
-        <line num="143" type="stmt" count="0"/>
+        <line num="140" type="method" name="defineEnvironments" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="142" type="stmt" count="1"/>
+        <line num="143" type="stmt" count="1"/>
         <line num="151" type="method" name="configureWordPressApp" visibility="public" complexity="1" crap="2" count="0"/>
         <line num="153" type="stmt" count="0"/>
         <line num="155" type="stmt" count="0"/>
@@ -79,9 +79,9 @@
         <line num="257" type="method" name="isSSL" visibility="public" complexity="2" crap="6" count="0"/>
         <line num="259" type="stmt" count="0"/>
         <line num="260" type="stmt" count="0"/>
-        <metrics loc="262" ncloc="143" classes="1" methods="19" coveredmethods="8" conditionals="0" coveredconditionals="0" statements="54" coveredstatements="21" elements="73" coveredelements="29"/>
+        <metrics loc="262" ncloc="143" classes="1" methods="19" coveredmethods="9" conditionals="0" coveredconditionals="0" statements="54" coveredstatements="23" elements="73" coveredelements="32"/>
       </file>
     </package>
-    <metrics files="1" loc="262" ncloc="143" classes="1" methods="19" coveredmethods="8" conditionals="0" coveredconditionals="0" statements="54" coveredstatements="21" elements="73" coveredelements="29"/>
+    <metrics files="1" loc="262" ncloc="143" classes="1" methods="19" coveredmethods="9" conditionals="0" coveredconditionals="0" statements="54" coveredstatements="23" elements="73" coveredelements="32"/>
   </project>
 </coverage>
