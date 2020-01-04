@@ -1,6 +1,7 @@
 # Deps
 vendor
 
-# Unit
+# Artifacts
 tmp
+clover.xml
 *.cache
