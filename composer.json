@@ -3,11 +3,11 @@
   "description": "Internal configuration helper for roots/bedrock projects",
   "license": "MIT",
   "require": {
-    "oscarotero/env": "^1.2.0",
-    "roots/wp-config": "1.0.0",
-    "vlucas/phpdotenv": "^4.1.0"
+    "roots/wp-config": "1.0.0"
   },
   "require-dev": {
+    "oscarotero/env": "^1.2.0",
+    "vlucas/phpdotenv": "^4.1.0",
     "roave/security-advisories": "dev-master",
     "squizlabs/php_codesniffer": "^3.5",
     "phpunit/phpunit": "^8.5"

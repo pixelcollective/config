@@ -199,7 +199,9 @@ class Bootloader
     }
 
     /**
-     * Allow WordPress to detect HTTPS when used behind a reverse proxy or a load balancer
+     * Allow WordPress to detect HTTPS when used behind a reverse proxy
+     * or a load balancer.
+     *
      * @see https://codex.wordpress.org/Function_Reference/is_ssl#Notes
      *
      * @return void
@@ -250,7 +252,7 @@ class Bootloader
         self::$rootsConfig::apply();
 
         if (!defined('ABSPATH')) {
-            define('ABSPATH', "{$this->bedrockDir}/web/wp");
+            define('ABSPATH', "{$this->bedrockDir}/web/wp/");
         }
     }
 
